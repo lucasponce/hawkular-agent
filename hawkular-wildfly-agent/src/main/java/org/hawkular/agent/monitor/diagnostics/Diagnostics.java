@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,19 +31,24 @@ public interface Diagnostics {
     MetricRegistry getMetricRegistry();
 
     /**
-     * @return the DMR sampling an discovery related diagnostics
+     * @return the DMR sampling and discovery related diagnostics
      */
     ProtocolDiagnostics getDMRDiagnostics();
 
     /**
-     * @return the JMX sampling an discovery related diagnostics
+     * @return the JMX sampling and discovery related diagnostics
      */
     ProtocolDiagnostics getJMXDiagnostics();
 
     /**
-     * @return the platform sampling an discovery related diagnostics
+     * @return the platform sampling and discovery related diagnostics
      */
     ProtocolDiagnostics getPlatformDiagnostics();
+
+    /**
+     * @return the Prometheus sampling and discovery related diagnostics
+     */
+    ProtocolDiagnostics getPrometheusDiagnostics();
 
     /**
      * @return tracks how many errors occurred while trying to store data to Hawkular storage

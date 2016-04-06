@@ -45,6 +45,9 @@ import org.hawkular.agent.monitor.protocol.jmx.JMXSession;
 import org.hawkular.agent.monitor.protocol.platform.PlatformEndpointService;
 import org.hawkular.agent.monitor.protocol.platform.PlatformNodeLocation;
 import org.hawkular.agent.monitor.protocol.platform.PlatformSession;
+import org.hawkular.agent.monitor.protocol.prometheus.PrometheusEndpointService;
+import org.hawkular.agent.monitor.protocol.prometheus.PrometheusNodeLocation;
+import org.hawkular.agent.monitor.protocol.prometheus.PrometheusSession;
 import org.hawkular.agent.monitor.util.ThreadFactoryGenerator;
 import org.jboss.msc.value.InjectedValue;
 
@@ -66,6 +69,7 @@ public class ProtocolServices {
         private ProtocolService<DMRNodeLocation, DMRSession> dmrProtocolService;
         private ProtocolService<JMXNodeLocation, JMXSession> jmxProtocolService;
         private ProtocolService<PlatformNodeLocation, PlatformSession> platformProtocolService;
+        private ProtocolService<PrometheusNodeLocation, PrometheusSession> prometheusProtocolService;
         private final Map<String, InjectedValue<SSLContext>> sslContexts;
         private final Diagnostics diagnostics;
         private int autoDiscoveryScanPeriodSecs;
@@ -79,7 +83,7 @@ public class ProtocolServices {
 
         public ProtocolServices build() {
             return new ProtocolServices(dmrProtocolService, jmxProtocolService, platformProtocolService,
-                    autoDiscoveryScanPeriodSecs);
+                    prometheusProtocolService, autoDiscoveryScanPeriodSecs);
         }
 
         public Builder autoDiscoveryScanPeriodSecs(int periodSecs) {
@@ -175,6 +179,31 @@ public class ProtocolServices {
             this.platformProtocolService = builder.build();
             return this;
         }
+
+        public Builder prometheusProtocolService(ProtocolConfiguration<PrometheusNodeLocation> protocolConfig) {
+
+            ProtocolService.Builder<PrometheusNodeLocation, PrometheusSession> builder = ProtocolService.builder();
+
+            for (EndpointConfiguration server : protocolConfig.getEndpoints().values()) {
+                if (server.isEnabled()) {
+                    final String securityRealm = server.getSecurityRealm();
+                    final SSLContext sslContext = securityRealm != null
+                            ? sslContexts.get(server.getSecurityRealm()).getOptionalValue() : null;
+                    final MonitoredEndpoint endpoint = MonitoredEndpoint.of(server, sslContext);
+                    ResourceTypeManager<PrometheusNodeLocation> resourceTypeManager = new ResourceTypeManager<>(
+                            protocolConfig.getTypeSets().getResourceTypeSets(), server.getResourceTypeSets());
+                    PrometheusEndpointService endpointService = new PrometheusEndpointService(feedId, endpoint,
+                            resourceTypeManager, diagnostics.getPrometheusDiagnostics());
+                    builder.endpointService(endpointService);
+
+                    log.debugf("[%s] created with resource type sets [%s]", endpointService,
+                            server.getResourceTypeSets());
+                }
+            }
+
+            this.prometheusProtocolService = builder.build();
+            return this;
+        }
     }
 
     private static final MsgLogger log = AgentLoggers.getLogger(ProtocolServices.class);
@@ -187,6 +216,7 @@ public class ProtocolServices {
     private final ProtocolService<DMRNodeLocation, DMRSession> dmrProtocolService;
     private final ProtocolService<JMXNodeLocation, JMXSession> jmxProtocolService;
     private final ProtocolService<PlatformNodeLocation, PlatformSession> platformProtocolService;
+    private final ProtocolService<PrometheusNodeLocation, PrometheusSession> prometheusProtocolService;
     private final List<ProtocolService<?, ?>> services;
 
     // used to execute auto-discovery scans periodically
@@ -197,12 +227,14 @@ public class ProtocolServices {
             ProtocolService<DMRNodeLocation, DMRSession> dmrProtocolService,
             ProtocolService<JMXNodeLocation, JMXSession> jmxProtocolService,
             ProtocolService<PlatformNodeLocation, PlatformSession> platformProtocolService,
+            ProtocolService<PrometheusNodeLocation, PrometheusSession> prometheusProtocolService,
             int autoDiscoveryScanPeriodSecs) {
         this.dmrProtocolService = dmrProtocolService;
         this.jmxProtocolService = jmxProtocolService;
         this.platformProtocolService = platformProtocolService;
+        this.prometheusProtocolService = prometheusProtocolService;
         this.services = Collections.unmodifiableList(Arrays.asList(dmrProtocolService, jmxProtocolService,
-                platformProtocolService));
+                platformProtocolService, prometheusProtocolService));
         this.autoDiscoveryScanPeriodSecs = autoDiscoveryScanPeriodSecs;
     }
 
@@ -261,6 +293,10 @@ public class ProtocolServices {
 
     public ProtocolService<PlatformNodeLocation, PlatformSession> getPlatformProtocolService() {
         return platformProtocolService;
+    }
+
+    public ProtocolService<PrometheusNodeLocation, PrometheusSession> getPrometheusProtocolService() {
+        return prometheusProtocolService;
     }
 
     public List<ProtocolService<?, ?>> getServices() {

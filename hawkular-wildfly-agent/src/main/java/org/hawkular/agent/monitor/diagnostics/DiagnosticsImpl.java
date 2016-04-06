@@ -29,6 +29,7 @@ public class DiagnosticsImpl implements Diagnostics {
     private final ProtocolDiagnostics dmrDiagnostics;
     private final ProtocolDiagnostics jmxDiagnostics;
     private final ProtocolDiagnostics platformDiagnostics;
+    private final ProtocolDiagnostics prometheusDiagnostics;
     private final Meter storageError;
     private final Counter metricsStorageBuffer;
     private final Meter metricRate;
@@ -48,6 +49,7 @@ public class DiagnosticsImpl implements Diagnostics {
         this.dmrDiagnostics = newDiagnostics("dmr", feedId, registry);
         this.jmxDiagnostics = newDiagnostics("jmx", feedId, registry);
         this.platformDiagnostics = newDiagnostics("platform", feedId, registry);
+        this.prometheusDiagnostics = newDiagnostics("prometheus", feedId, registry);
 
         storageError = registry.meter(name(feedId, "storage.error-rate"));
         metricsStorageBuffer = registry.counter(name(feedId, "metrics.storage-buffer-size"));
@@ -86,6 +88,11 @@ public class DiagnosticsImpl implements Diagnostics {
     @Override
     public ProtocolDiagnostics getPlatformDiagnostics() {
         return platformDiagnostics;
+    }
+
+    @Override
+    public ProtocolDiagnostics getPrometheusDiagnostics() {
+        return prometheusDiagnostics;
     }
 
     @Override
