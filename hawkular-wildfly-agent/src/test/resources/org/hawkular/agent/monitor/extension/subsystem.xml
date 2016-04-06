@@ -1,6 +1,6 @@
 <!--
 
-    Copyright 2015 Red Hat, Inc. and/or its affiliates
+    Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
     and other contributors as indicated by the @author tags.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -110,6 +110,37 @@
     </resource-type-jmx>
   </resource-type-set-jmx>
 
+  <metric-set-prometheus name="M Metric Set PROM">
+    <metric-prometheus name="M Metric PROM"
+                interval="30"
+                timeUnits="seconds"
+                metricUnits="bytes"
+                objectName="domain:foo=bar"
+                attribute="yAttribute" />
+  </metric-set-prometheus>
+
+  <avail-set-prometheus name="A Avail Set PROM" enabled="false">
+    <avail-prometheus name="A Avail PROM"
+                      interval="30"
+                      timeUnits="seconds"
+                      objectName="domain:foo=bar"
+                      attribute="yAttribute"
+                      upRegex="run.*" />
+  </avail-set-prometheus>
+
+  <resource-type-set-prometheus name="R Resource Type Set PROM" enabled="false">
+    <resource-type-prometheus name="R Resource Type PROM"
+                              resourceNameTemplate="R Resource Name PROM"
+                              objectName="domain:foo=bar"
+                              metricSets="M Metric Set PROM"
+                              availSets="A Avail Set PROM">
+      <resource-config-prometheus name="Config Name"
+                                  objectName="domain:foo=bar"
+                                  attribute="configAttribute" />
+      <operation-prometheus name="O Operation PROM" operationName="oOperation" objectName="domain:foo=bar" />
+    </resource-type-prometheus>
+  </resource-type-set-prometheus>
+
   <managed-servers>
     <remote-dmr name="Local Host"
                 enabled="false"
@@ -127,6 +158,12 @@
                 url="https://localhost:8080/jolokia"
                 securityRealm="HawkularRealm"
                 resourceTypeSets="R Resource Type Set" />
+
+    <remote-prometheus name="Remote PROM"
+                       enabled="false"
+                       url="https://localhost:9090/api/v1"
+                       securityRealm="HawkularRealm"
+                       resourceTypeSets="R Resource Type Set PROM" />
   </managed-servers>
 
   <platform enabled="false">

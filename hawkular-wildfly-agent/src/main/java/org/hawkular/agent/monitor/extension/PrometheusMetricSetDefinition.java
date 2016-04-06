@@ -25,32 +25,28 @@ import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.PersistentResourceDefinition;
 import org.jboss.as.controller.registry.OperationEntry.Flag;
 
-public class ManagedServersDefinition extends PersistentResourceDefinition {
+public class PrometheusMetricSetDefinition extends PersistentResourceDefinition {
 
-    public static final ManagedServersDefinition INSTANCE = new ManagedServersDefinition();
+    public static final PrometheusMetricSetDefinition INSTANCE = new PrometheusMetricSetDefinition();
 
-    static final String MANAGED_SERVERS = "managed-servers";
+    static final String METRIC_SET = "metric-set-prometheus";
 
-    private ManagedServersDefinition() {
-        super(PathElement.pathElement(MANAGED_SERVERS, "default"),
-                SubsystemExtension.getResourceDescriptionResolver(MANAGED_SERVERS),
-                ManagedServersAdd.INSTANCE,
-                ManagedServersRemove.INSTANCE,
+    private PrometheusMetricSetDefinition() {
+        super(PathElement.pathElement(METRIC_SET),
+                SubsystemExtension.getResourceDescriptionResolver(METRIC_SET),
+                PrometheusMetricSetAdd.INSTANCE,
+                PrometheusMetricSetRemove.INSTANCE,
                 Flag.RESTART_RESOURCE_SERVICES,
                 Flag.RESTART_RESOURCE_SERVICES);
     }
 
     @Override
     public Collection<AttributeDefinition> getAttributes() {
-        return Arrays.asList(ManagedServersAttributes.ATTRIBUTES);
+        return Arrays.asList(PrometheusMetricSetAttributes.ATTRIBUTES);
     }
 
     @Override
     protected List<? extends PersistentResourceDefinition> getChildren() {
-        return Arrays.asList(
-                LocalDMRDefinition.INSTANCE,
-                RemoteDMRDefinition.INSTANCE,
-                RemoteJMXDefinition.INSTANCE,
-                RemotePrometheusDefinition.INSTANCE);
+        return Arrays.asList(PrometheusMetricDefinition.INSTANCE);
     }
 }

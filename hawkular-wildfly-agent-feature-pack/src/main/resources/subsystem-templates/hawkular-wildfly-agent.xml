@@ -816,7 +816,41 @@
       </resource-type-jmx>
     </resource-type-set-jmx>
 
+    <!-- Prometheus metadata for monitoring applications that expose Prometheus data -->
+
+    <avail-set-prometheus name="TestAvailSetPrometheus" enabled="true">
+      <avail-prometheus name="Test Avail Prometheus"
+                        interval="30"
+                        timeUnits="seconds"
+                        attribute="bar"
+                        upRegex="[0123456789]+" />
+    </avail-set-prometheus>
+
+    <metric-set-prometheus name="TestMetricSetPrometheus" enabled="true">
+      <metric-prometheus name="Test Metric Prometheus"
+                         interval="30"
+                         timeUnits="seconds"
+                         metricUnits="milliseconds"
+                         attribute="bar" />
+    </metric-set-prometheus>
+
+    <resource-type-set-prometheus name="TestResourceTypeSetPrometheus" enabled="true">
+      <resource-type-prometheus name="Test Resource Type Prometheus"
+                                resourceNameTemplate="PRO [%_ManagedServerName%][%type%]"
+                                objectName="foo"
+                                metricSets="TestMetricSetPrometheus"
+                                availSets="TestAvailSetPrometheus" >
+        <resource-config-prometheus name="TestResConfigPrometheus" objectName="foo" attribute="bar" />
+      </resource-type-prometheus>
+    </resource-type-set-prometheus>
+
+    <!-- Managed Serves that can be monitored -->
+
     <managed-servers>
+      <local-dmr name="Local"
+                 enabled="true"
+                 resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,XA Datasource,JDBC Driver,Transaction Manager,Messaging,Hawkular" />
+
       <remote-dmr name="Another Remote Server"
                   enabled="false"
                   host="localhost"
@@ -825,11 +859,8 @@
                   password="adminPass"
                   resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,XA Datasource,JDBC Driver,Transaction Manager,Messaging" />
 
-      <local-dmr name="Local"
-                 enabled="true"
-                 resourceTypeSets="Main,Deployment,Web Component,EJB,Datasource,XA Datasource,JDBC Driver,Transaction Manager,Messaging,Hawkular" />
-
       <remote-jmx name="Remote JMX" enabled="false" resourceTypeSets="MainJMX,MemoryPoolJMX" url="http://localhost:8080/jolokia-war"/>
+      <remote-prometheus name="Remote Prometheus" enabled="false" resourceTypeSets="TestResourceTypeSetPrometheus" url="http://localhost:9090/api/v1"/>
     </managed-servers>
 
     <platform enabled="true">

@@ -18,39 +18,31 @@ package org.hawkular.agent.monitor.extension;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.PersistentResourceDefinition;
 import org.jboss.as.controller.registry.OperationEntry.Flag;
 
-public class ManagedServersDefinition extends PersistentResourceDefinition {
+public class PrometheusResourceConfigDefinition extends PersistentResourceDefinition {
 
-    public static final ManagedServersDefinition INSTANCE = new ManagedServersDefinition();
+    public static final PrometheusResourceConfigDefinition INSTANCE = new PrometheusResourceConfigDefinition();
 
-    static final String MANAGED_SERVERS = "managed-servers";
+    static final String RESOURCE_CONFIG = "resource-config-prometheus";
 
-    private ManagedServersDefinition() {
-        super(PathElement.pathElement(MANAGED_SERVERS, "default"),
-                SubsystemExtension.getResourceDescriptionResolver(MANAGED_SERVERS),
-                ManagedServersAdd.INSTANCE,
-                ManagedServersRemove.INSTANCE,
+    private PrometheusResourceConfigDefinition() {
+        super(PathElement.pathElement(RESOURCE_CONFIG),
+                SubsystemExtension.getResourceDescriptionResolver(
+                        PrometheusResourceTypeSetDefinition.RESOURCE_TYPE_SET,
+                        PrometheusResourceTypeDefinition.RESOURCE_TYPE, RESOURCE_CONFIG),
+                PrometheusResourceConfigAdd.INSTANCE,
+                PrometheusResourceConfigRemove.INSTANCE,
                 Flag.RESTART_RESOURCE_SERVICES,
                 Flag.RESTART_RESOURCE_SERVICES);
     }
 
     @Override
     public Collection<AttributeDefinition> getAttributes() {
-        return Arrays.asList(ManagedServersAttributes.ATTRIBUTES);
-    }
-
-    @Override
-    protected List<? extends PersistentResourceDefinition> getChildren() {
-        return Arrays.asList(
-                LocalDMRDefinition.INSTANCE,
-                RemoteDMRDefinition.INSTANCE,
-                RemoteJMXDefinition.INSTANCE,
-                RemotePrometheusDefinition.INSTANCE);
+        return Arrays.asList(PrometheusResourceConfigAttributes.ATTRIBUTES);
     }
 }

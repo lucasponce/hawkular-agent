@@ -25,32 +25,28 @@ import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.PersistentResourceDefinition;
 import org.jboss.as.controller.registry.OperationEntry.Flag;
 
-public class ManagedServersDefinition extends PersistentResourceDefinition {
+public class PrometheusResourceTypeSetDefinition extends PersistentResourceDefinition {
 
-    public static final ManagedServersDefinition INSTANCE = new ManagedServersDefinition();
+    public static final PrometheusResourceTypeSetDefinition INSTANCE = new PrometheusResourceTypeSetDefinition();
 
-    static final String MANAGED_SERVERS = "managed-servers";
+    static final String RESOURCE_TYPE_SET = "resource-type-set-prometheus";
 
-    private ManagedServersDefinition() {
-        super(PathElement.pathElement(MANAGED_SERVERS, "default"),
-                SubsystemExtension.getResourceDescriptionResolver(MANAGED_SERVERS),
-                ManagedServersAdd.INSTANCE,
-                ManagedServersRemove.INSTANCE,
+    private PrometheusResourceTypeSetDefinition() {
+        super(PathElement.pathElement(RESOURCE_TYPE_SET),
+                SubsystemExtension.getResourceDescriptionResolver(RESOURCE_TYPE_SET),
+                PrometheusResourceTypeSetAdd.INSTANCE,
+                PrometheusResourceTypeSetRemove.INSTANCE,
                 Flag.RESTART_RESOURCE_SERVICES,
                 Flag.RESTART_RESOURCE_SERVICES);
     }
 
     @Override
     public Collection<AttributeDefinition> getAttributes() {
-        return Arrays.asList(ManagedServersAttributes.ATTRIBUTES);
+        return Arrays.asList(PrometheusResourceTypeSetAttributes.ATTRIBUTES);
     }
 
     @Override
     protected List<? extends PersistentResourceDefinition> getChildren() {
-        return Arrays.asList(
-                LocalDMRDefinition.INSTANCE,
-                RemoteDMRDefinition.INSTANCE,
-                RemoteJMXDefinition.INSTANCE,
-                RemotePrometheusDefinition.INSTANCE);
+        return Arrays.asList(PrometheusResourceTypeDefinition.INSTANCE);
     }
 }

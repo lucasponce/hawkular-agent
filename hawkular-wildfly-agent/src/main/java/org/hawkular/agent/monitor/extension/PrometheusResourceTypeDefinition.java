@@ -25,32 +25,29 @@ import org.jboss.as.controller.PathElement;
 import org.jboss.as.controller.PersistentResourceDefinition;
 import org.jboss.as.controller.registry.OperationEntry.Flag;
 
-public class ManagedServersDefinition extends PersistentResourceDefinition {
+public class PrometheusResourceTypeDefinition extends PersistentResourceDefinition {
 
-    public static final ManagedServersDefinition INSTANCE = new ManagedServersDefinition();
+    public static final PrometheusResourceTypeDefinition INSTANCE = new PrometheusResourceTypeDefinition();
 
-    static final String MANAGED_SERVERS = "managed-servers";
+    static final String RESOURCE_TYPE = "resource-type-prometheus";
 
-    private ManagedServersDefinition() {
-        super(PathElement.pathElement(MANAGED_SERVERS, "default"),
-                SubsystemExtension.getResourceDescriptionResolver(MANAGED_SERVERS),
-                ManagedServersAdd.INSTANCE,
-                ManagedServersRemove.INSTANCE,
+    private PrometheusResourceTypeDefinition() {
+        super(PathElement.pathElement(RESOURCE_TYPE),
+                SubsystemExtension.getResourceDescriptionResolver(
+                        PrometheusResourceTypeSetDefinition.RESOURCE_TYPE_SET, RESOURCE_TYPE),
+                PrometheusResourceTypeAdd.INSTANCE,
+                PrometheusResourceTypeRemove.INSTANCE,
                 Flag.RESTART_RESOURCE_SERVICES,
                 Flag.RESTART_RESOURCE_SERVICES);
     }
 
     @Override
     public Collection<AttributeDefinition> getAttributes() {
-        return Arrays.asList(ManagedServersAttributes.ATTRIBUTES);
+        return Arrays.asList(PrometheusResourceTypeAttributes.ATTRIBUTES);
     }
 
     @Override
     protected List<? extends PersistentResourceDefinition> getChildren() {
-        return Arrays.asList(
-                LocalDMRDefinition.INSTANCE,
-                RemoteDMRDefinition.INSTANCE,
-                RemoteJMXDefinition.INSTANCE,
-                RemotePrometheusDefinition.INSTANCE);
+        return Arrays.asList(PrometheusResourceConfigDefinition.INSTANCE, PrometheusOperationDefinition.INSTANCE);
     }
 }
