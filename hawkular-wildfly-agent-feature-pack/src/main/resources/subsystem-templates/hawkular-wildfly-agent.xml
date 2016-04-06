@@ -840,7 +840,6 @@
                                 objectName="foo"
                                 metricSets="TestMetricSetPrometheus"
                                 availSets="TestAvailSetPrometheus" >
-        <resource-config-prometheus name="TestResConfigPrometheus" objectName="foo" attribute="bar" />
       </resource-type-prometheus>
     </resource-type-set-prometheus>
 

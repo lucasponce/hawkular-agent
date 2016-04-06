@@ -134,10 +134,6 @@
                               objectName="domain:foo=bar"
                               metricSets="M Metric Set PROM"
                               availSets="A Avail Set PROM">
-      <resource-config-prometheus name="Config Name"
-                                  objectName="domain:foo=bar"
-                                  attribute="configAttribute" />
-      <operation-prometheus name="O Operation PROM" operationName="oOperation" objectName="domain:foo=bar" />
     </resource-type-prometheus>
   </resource-type-set-prometheus>
 

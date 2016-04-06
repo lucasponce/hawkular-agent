@@ -18,7 +18,6 @@ package org.hawkular.agent.monitor.extension;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.jboss.as.controller.AttributeDefinition;
 import org.jboss.as.controller.PathElement;
@@ -44,10 +43,5 @@ public class PrometheusResourceTypeDefinition extends PersistentResourceDefiniti
     @Override
     public Collection<AttributeDefinition> getAttributes() {
         return Arrays.asList(PrometheusResourceTypeAttributes.ATTRIBUTES);
-    }
-
-    @Override
-    protected List<? extends PersistentResourceDefinition> getChildren() {
-        return Arrays.asList(PrometheusResourceConfigDefinition.INSTANCE, PrometheusOperationDefinition.INSTANCE);
     }
 }
