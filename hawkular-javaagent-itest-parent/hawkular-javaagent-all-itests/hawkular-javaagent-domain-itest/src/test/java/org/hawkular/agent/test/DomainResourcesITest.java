@@ -103,7 +103,7 @@ public class DomainResourcesITest extends AbstractDomainITestSuite {
 
     @Test(groups = { GROUP }, dependsOnMethods = { "wfStarted" })
     public void serverGroupsInInventory() throws Throwable {
-        Collection<ResourceWithType> servers = testHelper.getResourceByType(hawkularFeedId, "Domain WildFly Group", 2);
+        Collection<ResourceWithType> servers = testHelper.getResourceByType(hawkularFeedId, "Domain Server Group", 2);
         Collection<String> dmrServerGroupNames = getServerGroupNames();
         for (String groupName : dmrServerGroupNames) {
             boolean hasMatch = servers.stream()
@@ -163,9 +163,9 @@ public class DomainResourcesITest extends AbstractDomainITestSuite {
                 .findFirst();
         Assert.assertTrue(suspendServers.isPresent());
 
-        Assert.assertEquals("int", startServers.get().getParameters().get("timeout").get("type"));
-        Assert.assertNull(startServers.get().getParameters().get("timeout").get("defaultValue"));
-        Assert.assertNotNull(startServers.get().getParameters().get("timeout").get("description"));
+        Assert.assertEquals("int", suspendServers.get().getParameters().get("timeout").get("type"));
+        Assert.assertNull(suspendServers.get().getParameters().get("timeout").get("defaultValue"));
+        Assert.assertNotNull(suspendServers.get().getParameters().get("timeout").get("description"));
 
         // STOP SERVERS
         Optional<Operation> stopServers = server.getType()
